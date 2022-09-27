@@ -26,7 +26,7 @@ const getUtilisateursById = (req: Request, res: Response) => {
 }
 
 const addUtilisateurs = (req: Request, res: Response) => {
-    const { pseudo, email, password, token } = req.body;
+    const { pseudo, email, bio, password, token } = req.body;
 
     //check if email exists
     pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
@@ -35,7 +35,7 @@ const addUtilisateurs = (req: Request, res: Response) => {
         }
         else {
             //add utilisateur to bdd
-            pool.query(queries.addUtilisateurs, [pseudo, email, password, token], (error: ErrorRequestHandler, results: any) => {
+            pool.query(queries.addUtilisateurs, [pseudo, email, bio, password, token], (error: ErrorRequestHandler, results: any) => {
                 res.status(201).send("Création du compte utilisateur, fait avec succes !")
             })
         }
