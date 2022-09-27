@@ -1,9 +1,17 @@
 import { LOADIPHLPAPI } from "dns";
 import { ErrorRequestHandler, Request, Response } from "express";
-import { BadRequestException, NotFoundException } from '~/utils/exceptions'
+import { BadRequestException, NotFoundException } from '~/utils/exceptions';
 
 const pool = require('./models/dbConfig');
 const queries = require('./queries');
+
+const loginUtilisateur = async (req: Request, res: Response) => {
+
+};
+
+const registerUtilisateur = async (req: Request, res: Response) => {
+    
+};
 
 const getUtilisateurs = (req: Request, res: Response) => {
     pool.query(queries.getUtilisateurs, (error: ErrorRequestHandler, results: any) => {
