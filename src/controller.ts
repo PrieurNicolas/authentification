@@ -1,4 +1,5 @@
 import { ErrorRequestHandler, Request, Response } from "express";
+import bcrypt from 'bcrypt';
 
 const pool = require('./models/dbConfig');
 const queries = require('./queries');
@@ -9,6 +10,12 @@ const getUtilisateurs = (req: Request, res: Response) => {
         res.status(200).json(results.rows);
     });
 };
+
+const hashPassword = async (req: Request, res: Response) => {
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password,10);
+    } catch (error) {}
+}
 
 const getUtilisateursById = (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
@@ -117,5 +124,6 @@ module.exports = {
     addUtilisateurs,
     removeUtilisateurs,
     updateUtilisateurs,
+    hashPassword
     // updateEmailUtilisateurs,
 };

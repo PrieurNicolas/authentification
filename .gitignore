@@ -7,3 +7,6 @@
 
 # testing
 /coverage
+
+./db.sql
+/src/models/dbConfig.ts
