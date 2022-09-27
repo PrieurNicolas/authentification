@@ -1,17 +1,7 @@
-import { LOADIPHLPAPI } from "dns";
 import { ErrorRequestHandler, Request, Response } from "express";
-import { BadRequestException, NotFoundException } from '~/utils/exceptions';
 
 const pool = require('./models/dbConfig');
 const queries = require('./queries');
-
-const loginUtilisateur = async (req: Request, res: Response) => {
-
-};
-
-const registerUtilisateur = async (req: Request, res: Response) => {
-    
-};
 
 const getUtilisateurs = (req: Request, res: Response) => {
     pool.query(queries.getUtilisateurs, (error: ErrorRequestHandler, results: any) => {
@@ -69,7 +59,7 @@ const removeUtilisateurs = (req: Request, res: Response) => {
 
 const updateUtilisateurs = (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
-    const { pseudo } = req.body;
+    const { pseudo, email, bio } = req.body;
 
     pool.query(queries.getUtilisateursById, [id], (error: ErrorRequestHandler, results: any) => {
         const noUtilisateursFound = !results.rows.length;
@@ -77,13 +67,49 @@ const updateUtilisateurs = (req: Request, res: Response) => {
             res.status(500).send(`L'utilisateur n'existe pas.`);
         }
         else {
-            pool.query(queries.updateUtilisateurs, [pseudo, id], (error: ErrorRequestHandler, results: any) => {
+            const pseudo2 = pseudo;
+            const email2 = email;
+            const bio2 = bio;
+            
+            if(pseudo == ""){
+              res.send(`Entrez un pseudo.`);
+            }else
+            if(email == ""){
+                res.send(`Entrez un email.`);
+            }else
+            if(bio == ""){
+                res.send(`Entrez une bio.`);
+            }
+            else{
+                pool.query(queries.updateUtilisateurs, [pseudo2, email2, bio2, id], (error: ErrorRequestHandler, results: any) => {
                 if (error) throw error;
-                res.status(200).send(`L'utilisateur à bien etait mis à jour`);
+                res.status(200).send(`l'utilisateur à bien etait mis à jour`);
             });
+            }
+
+            
         }
     });
 };
+
+// const updateEmailUtilisateurs = (req:Request, res:Response) => {
+//     const id = parseInt(req.params.id);
+//     const { email } = req.body;
+
+//     pool.query(queries.getUtilisateursById, [id], (error: ErrorRequestHandler, results: any) => {
+//         const noUtilisateursFound = !results.rows.length;
+//         if (noUtilisateursFound) {
+//             res.status(500).send(`L'utilisateur n'existe pas.`);
+//         }
+//         else {
+//             pool.query(queries.updateEmailUtilisateurs, [email, id], (error: ErrorRequestHandler, results: any) => {
+//                 if (error) throw error;
+//                 res.status(200).send(`L'email de l'utilisateur à bien etaut mis à jour`);
+//             });
+//         }
+//     });
+// }
+
 
 module.exports = {
     getUtilisateurs,
@@ -91,4 +117,5 @@ module.exports = {
     addUtilisateurs,
     removeUtilisateurs,
     updateUtilisateurs,
+    // updateEmailUtilisateurs,
 };
