@@ -1,0 +1,10 @@
+POST http://localhost:5000/api/v1/utilisateur
+Content-Type: application/json
+
+{
+    "pseudo":"Rob",
+    "email":"robmail@foufou.com",
+    "password":"wow",
+    "bio":"Héritier",
+    "token":"TEMP"
+}

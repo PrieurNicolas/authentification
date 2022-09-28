@@ -12,9 +12,16 @@ const getUtilisateurs = (req: Request, res: Response) => {
 };
 
 const hashPassword = async (req: Request, res: Response) => {
+    const { pseudo, email, bio, password, token } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(req.body.password,10);
-    } catch (error) {}
+        // 46:49
+        const newUser = await pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
+            res.json({users:newUser.rows[0]})
+        });
+    } catch (error) {
+        res.status(500).send(`Une erreur de mot de passe est survenue.`)
+    }
 }
 
 const getUtilisateursById = (req: Request, res: Response) => {
