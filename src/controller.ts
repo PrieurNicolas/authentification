@@ -16,7 +16,7 @@ const loginUtilisateur = async (req: Request, res: Response) => {
     console.log("1")
         const {email, password} = req.body;
         console.log("2")
-        pool.query(queries.getUtilisateursByEmail, [email], async (error: ErrorRequestHandler, results: any) => {
+        const users = await pool.query(queries.getUtilisateursByEmail, [email], async (error: ErrorRequestHandler, results: any) => {
             try {
                 console.log("3")
                 if(results.rows.length === 0) {
@@ -26,6 +26,12 @@ const loginUtilisateur = async (req: Request, res: Response) => {
             } catch (error) {
         res.status(500).send(`Une erreur d'authentification est survenue.`)
         }
+        try {
+
+        } catch (error) {}
+        const validPassword = await bcrypt.compare(password,users.rows[0].password);
+        if(!validPassword) return res.status(401).json({error:"Mot de passe incorrect."});
+        return res.status(200).json("Connexion Réussie.")
     console.log("4")
 })}
 
