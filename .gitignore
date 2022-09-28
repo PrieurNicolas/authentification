@@ -9,4 +9,6 @@
 /coverage
 
 ./db.sql
-./src/models/dbConfig.ts
+
+# db file
+../authentificationAPI/src/models/dbConfig.ts
