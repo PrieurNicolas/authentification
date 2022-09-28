@@ -4,7 +4,7 @@ const controller = require('./controller');
 const router = Router();
 
 router.get('/', controller.getUtilisateurs);
-// router.post('/', controller.addUtilisateurs);
+router.post('/', controller.addUtilisateurs);
 router.get('/:id', controller.getUtilisateursById);
 router.put('/:id', controller.updateUtilisateurs);
 router.delete('/:id', controller.removeUtilisateurs);
@@ -12,6 +12,6 @@ router.delete('/:id', controller.removeUtilisateurs);
 // router.post('/', controller.loginUtilisateur);
 // router.post('/', controller.registerUtilisateur);
 
-router.post('/', controller.hashPassword);
+// router.post('/', controller.hashPassword);
 
 module.exports = router;
