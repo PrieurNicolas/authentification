@@ -9,4 +9,4 @@
 /coverage
 
 ./db.sql
-/src/models/dbConfig.ts
+./src/models/dbConfig.ts
