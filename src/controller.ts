@@ -11,14 +11,13 @@ const getUtilisateurs = (req: Request, res: Response) => {
     });
 };
 
-const hashPassword = async (req: Request, res: Response) => {
+const addUtilisateurs = async (req: Request, res: Response) => {
     const { pseudo, email, bio, password, token } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(req.body.password,10);
         // 46:49
-        const newUser = await pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
-            //res.json({users:newUser.rows[0]})
-            res.status(201).send('log done')
+        await pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
+            res.status(201).send(hashedPassword)
         });
     } catch (error) {
         res.status(500).send(`Une erreur de mot de passe est survenue.`)
@@ -38,23 +37,23 @@ const getUtilisateursById = (req: Request, res: Response) => {
     })
 }
 
-const addUtilisateurs = (req: Request, res: Response) => {
-    const { pseudo, email, bio, password, token } = req.body;
+// const addUtilisateurs = (req: Request, res: Response) => {
+//     const { pseudo, email, bio, password, token } = req.body;
 
-    //check if email exists
-    pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
-        if (results.rows.length) {
-            res.status(500).send("L'email est déjà utilisé.")
-        }
-        else {
-            //add utilisateur to bdd
-            pool.query(queries.addUtilisateurs, [pseudo, email, bio, password, token], (error: ErrorRequestHandler, results: any) => {
-                res.status(201).send("Création du compte utilisateur, fait avec succes !")
-            })
-        }
-    });
+//     //check if email exists
+//     pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
+//         if (results.rows.length) {
+//             res.status(500).send("L'email est déjà utilisé.")
+//         }
+//         else {
+//             //add utilisateur to bdd
+//             pool.query(queries.addUtilisateurs, [pseudo, email, bio, password, token], (error: ErrorRequestHandler, results: any) => {
+//                 res.status(201).send("Création du compte utilisateur, fait avec succes !")
+//             })
+//         }
+//     });
 
-};
+// };
 
 const removeUtilisateurs = (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
@@ -132,6 +131,5 @@ module.exports = {
     addUtilisateurs,
     removeUtilisateurs,
     updateUtilisateurs,
-    hashPassword
     // updateEmailUtilisateurs,
 };
