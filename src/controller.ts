@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, Request, Response } from "express";
 import bcrypt from 'bcrypt';
-import { kMaxLength, kStringMaxLength } from "buffer";
+import jwt from 'jsonwebtoken';
 
 const pool = require('./models/dbConfig');
 const queries = require('./queries');
@@ -12,11 +12,18 @@ const getUtilisateurs = (req: Request, res: Response) => {
     });
 };
 
+const loginUtilisateur = async (req: Request, res: Response) => {
+    try {
+        const {email, password} = req.body;
+        const users = await pool.query(queries.getUtilisateursByEmail, [email]);
+        if(users.rows.length === 0) return res.status(401).json({error : "Email non trouvé, réessayez."});
+    } catch (error) {}
+}
+
 const addUtilisateurs = async (req: Request, res: Response) => {
     const { pseudo, email, bio, password, token } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        // 46:49
         pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
             if (results.rows.length) {
                 res.status(500).send("L'email est déjà utilisé.")
@@ -69,24 +76,6 @@ const getUtilisateursById = (req: Request, res: Response) => {
     })
 }
 
-// const addUtilisateurs = (req: Request, res: Response) => {
-//     const { pseudo, email, bio, password, token } = req.body;
-
-//     //check if email exists
-//     pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
-//         if (results.rows.length) {
-//             res.status(500).send("L'email est déjà utilisé.")
-//         }
-//         else {
-//             //add utilisateur to bdd
-//             pool.query(queries.addUtilisateurs, [pseudo, email, bio, password, token], (error: ErrorRequestHandler, results: any) => {
-//                 res.status(201).send("Création du compte utilisateur, fait avec succes !")
-//             })
-//         }
-//     });
-
-// };
-
 const removeUtilisateurs = (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
 
@@ -138,24 +127,6 @@ const updateUtilisateurs = (req: Request, res: Response) => {
     });
 };
 
-// const updateEmailUtilisateurs = (req:Request, res:Response) => {
-//     const id = parseInt(req.params.id);
-//     const { email } = req.body;
-
-//     pool.query(queries.getUtilisateursById, [id], (error: ErrorRequestHandler, results: any) => {
-//         const noUtilisateursFound = !results.rows.length;
-//         if (noUtilisateursFound) {
-//             res.status(500).send(`L'utilisateur n'existe pas.`);
-//         }
-//         else {
-//             pool.query(queries.updateEmailUtilisateurs, [email, id], (error: ErrorRequestHandler, results: any) => {
-//                 if (error) throw error;
-//                 res.status(200).send(`L'email de l'utilisateur à bien etaut mis à jour`);
-//             });
-//         }
-//     });
-// }
-
 
 module.exports = {
     getUtilisateurs,
@@ -163,5 +134,5 @@ module.exports = {
     addUtilisateurs,
     removeUtilisateurs,
     updateUtilisateurs,
-    // updateEmailUtilisateurs,
+    loginUtilisateur,
 };
