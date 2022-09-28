@@ -15,5 +15,6 @@ module.exports = {
     addUtilisateurs,
     removeUtilisateurs,
     updateUtilisateurs,
+    getUtilisateursByEmail,
     // updateEmailUtilisateur,
 };
