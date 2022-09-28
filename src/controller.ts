@@ -1,5 +1,6 @@
 import { ErrorRequestHandler, Request, Response } from "express";
 import bcrypt from 'bcrypt';
+import { kMaxLength, kStringMaxLength } from "buffer";
 
 const pool = require('./models/dbConfig');
 const queries = require('./queries');
@@ -14,19 +15,42 @@ const getUtilisateurs = (req: Request, res: Response) => {
 const addUtilisateurs = async (req: Request, res: Response) => {
     const { pseudo, email, bio, password, token } = req.body;
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password,10);
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
         // 46:49
         pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
-                    if (results.rows.length) {
-                        res.status(500).send("L'email est déjà utilisé.")
-                    }
-                    else {
-                        //add utilisateur to bdd
-                        pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
-                            res.status(201).send("Création du compte utilisateur, fait avec succes !")
-                        })
-                    }
-                });
+            if (results.rows.length) {
+                res.status(500).send("L'email est déjà utilisé.")
+            }
+            else {
+                if (pseudo == "") {
+                    res.send(`Entrez un pseudo.`);
+                } else
+                    if (pseudo.length >= 30) {
+                        res.send(`Pseudo trop long.`);
+                    } else
+                        if (email == "") {
+                            res.send(`Entrez un email.`);
+                        } else
+                            if (email.length >= 50) {
+                                res.send(`Email trop long`);
+                            } else
+                                if (bio == "") {
+                                    res.send(`Entrez une bio.`);
+                                } else
+                                    if (password == "") {
+                                        res.send(`Entrez un mot de passe.`);
+                                    }
+                                    if(password.length < 5){
+                                        res.send(`Mot de passe trop petit.`);
+                                    }
+                                    else {
+                                        //add utilisateur to bdd
+                                        pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
+                                            res.status(201).send("Création du compte utilisateur, fait avec succes !")
+                                        })
+                                    }
+            }
+        });
     } catch (error) {
         res.status(500).send(`Une erreur de mot de passe est survenue.`)
     }
@@ -92,24 +116,24 @@ const updateUtilisateurs = (req: Request, res: Response) => {
             const pseudo2 = pseudo;
             const email2 = email;
             const bio2 = bio;
-            
-            if(pseudo == ""){
-              res.send(`Entrez un pseudo.`);
-            }else
-            if(email == ""){
-                res.send(`Entrez un email.`);
-            }else
-            if(bio == ""){
-                res.send(`Entrez une bio.`);
-            }
-            else{
-                pool.query(queries.updateUtilisateurs, [pseudo2, email2, bio2, id], (error: ErrorRequestHandler, results: any) => {
-                if (error) throw error;
-                res.status(200).send(`l'utilisateur à bien etait mis à jour`);
-            });
-            }
 
-            
+            if (pseudo == "") {
+                res.send(`Entrez un pseudo.`);
+            } else
+                if (email == "") {
+                    res.send(`Entrez un email.`);
+                } else
+                    if (bio == "") {
+                        res.send(`Entrez une bio.`);
+                    }
+                    else {
+                        pool.query(queries.updateUtilisateurs, [pseudo2, email2, bio2, id], (error: ErrorRequestHandler, results: any) => {
+                            if (error) throw error;
+                            res.status(200).send(`l'utilisateur à bien etait mis à jour`);
+                        });
+                    }
+
+
         }
     });
 };
