@@ -12,3 +12,4 @@
 
 # db file
 ../authentificationAPI/src/models/dbConfig.ts
+src/models/dbConfig.ts
