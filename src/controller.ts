@@ -14,19 +14,20 @@ const getUtilisateurs = (req: Request, res: Response) => {
 
 const loginUtilisateur = async (req: Request, res: Response) => {
     console.log("1")
-    try {
         const {email, password} = req.body;
-        console.log("1")
+        console.log("2")
         pool.query(queries.getUtilisateursByEmail, [email], async (error: ErrorRequestHandler, results: any) => {
-            console.log("1")
-            if(results.rows.length === 0) {
+            try {
+                console.log("3")
+                if(results.rows.length === 0) {
+                    console.log("3.5")
                 res.status(500).send("Email non trouvé, réessayez.");
-            }
-        });
-    } catch (error) {
+                }
+            } catch (error) {
         res.status(500).send(`Une erreur d'authentification est survenue.`)
-    }
-}
+        }
+    console.log("4")
+})}
 
 const addUtilisateurs = async (req: Request, res: Response) => {
     const { pseudo, email, bio, password, token } = req.body;
@@ -81,13 +82,6 @@ const getUtilisateursById = (req: Request, res: Response) => {
         } catch (error) {
             res.send(error)
         }
-        // const noUtilisateursFound = !results.rows.length;
-        // if (noUtilisateursFound) {
-        //     res.status(500).send(`L'utilisateur n'existe pas.`)
-        // }
-        // else {
-        //     res.status(200).json(results.rows)
-        // }
     })
 }
 
