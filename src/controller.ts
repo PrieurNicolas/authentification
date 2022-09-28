@@ -17,7 +17,8 @@ const hashPassword = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(req.body.password,10);
         // 46:49
         const newUser = await pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
-            res.json({users:newUser.rows[0]})
+            //res.json({users:newUser.rows[0]})
+            res.status(201).send('log done')
         });
     } catch (error) {
         res.status(500).send(`Une erreur de mot de passe est survenue.`)
