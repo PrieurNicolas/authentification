@@ -16,9 +16,17 @@ const addUtilisateurs = async (req: Request, res: Response) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password,10);
         // 46:49
-        await pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
-            res.status(201).send(hashedPassword)
-        });
+        pool.query(queries.checkEmailExists, [email], (error: ErrorRequestHandler, results: any) => {
+                    if (results.rows.length) {
+                        res.status(500).send("L'email est déjà utilisé.")
+                    }
+                    else {
+                        //add utilisateur to bdd
+                        pool.query(queries.addUtilisateurs, [pseudo, email, bio, hashedPassword, token], (error: ErrorRequestHandler, results: any) => {
+                            res.status(201).send("Création du compte utilisateur, fait avec succes !")
+                        })
+                    }
+                });
     } catch (error) {
         res.status(500).send(`Une erreur de mot de passe est survenue.`)
     }
