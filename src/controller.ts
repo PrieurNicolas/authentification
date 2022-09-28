@@ -17,14 +17,14 @@ const loginUtilisateur = async (req: Request, res: Response) => {
     try {
         const {email, password} = req.body;
         console.log("1")
-        await pool.query(queries.getUtilisateursByEmail, [email], (error: ErrorRequestHandler, results: any) => {
-            console.log(error)
+        pool.query(queries.getUtilisateursByEmail, [email], async (error: ErrorRequestHandler, results: any) => {
+            console.log("1")
             if(results.rows.length === 0) {
                 res.status(500).send("Email non trouvé, réessayez.");
             }
         });
     } catch (error) {
-        res.status(500).send(`Une erreur d'authentification est  survenue.`)
+        res.status(500).send(`Une erreur d'authentification est survenue.`)
     }
 }
 
@@ -74,13 +74,20 @@ const addUtilisateurs = async (req: Request, res: Response) => {
 const getUtilisateursById = (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     pool.query(queries.getUtilisateursById, [id], (error: ErrorRequestHandler, results: any) => {
-        const noUtilisateursFound = !results.rows.length;
-        if (noUtilisateursFound) {
-            res.status(500).send(`L'utilisateur n'existe pas.`)
-        }
-        else {
+        try {
+            const noUtilisateursFound = !results.rows.length
+            if(noUtilisateursFound) throw error
             res.status(200).json(results.rows)
+        } catch (error) {
+            res.send(error)
         }
+        // const noUtilisateursFound = !results.rows.length;
+        // if (noUtilisateursFound) {
+        //     res.status(500).send(`L'utilisateur n'existe pas.`)
+        // }
+        // else {
+        //     res.status(200).json(results.rows)
+        // }
     })
 }
 
