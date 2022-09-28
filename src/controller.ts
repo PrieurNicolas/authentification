@@ -13,11 +13,19 @@ const getUtilisateurs = (req: Request, res: Response) => {
 };
 
 const loginUtilisateur = async (req: Request, res: Response) => {
+    console.log("1")
     try {
         const {email, password} = req.body;
-        const users = await pool.query(queries.getUtilisateursByEmail, [email]);
-        if(users.rows.length === 0) return res.status(401).json({error : "Email non trouvé, réessayez."});
-    } catch (error) {}
+        console.log("1")
+        await pool.query(queries.getUtilisateursByEmail, [email], (error: ErrorRequestHandler, results: any) => {
+            console.log(error)
+            if(results.rows.length === 0) {
+                res.status(500).send("Email non trouvé, réessayez.");
+            }
+        });
+    } catch (error) {
+        res.status(500).send(`Une erreur d'authentification est  survenue.`)
+    }
 }
 
 const addUtilisateurs = async (req: Request, res: Response) => {
