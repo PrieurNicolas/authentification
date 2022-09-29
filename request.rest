@@ -1,10 +1,13 @@
-POST http://localhost:5000/api/v1/utilisateur
-Content-Type: application/json
+# POST http://localhost:5000/api/v1/utilisateur
+# Content-Type: application/json
 
-{
-    "pseudo":"Rob",
-    "email":"robmail@foufou.com",
-    "password":"wow",
-    "bio":"Héritier",
-    "token":"TEMP"
-}
+# {
+#     "pseudo":"Rob",
+#     "email":"robmail@foufou.com",
+#     "password":"wow",
+#     "bio":"Héritier",
+#     "token":"TEMP"
+# }
+
+GET http://localhost:5000/api/v1/utilisateur
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicHNldWRvIjoiR2FyZmVsIiwiZW1haWwiOiJsYXNhbmdAY2F0LnVzIiwiaWF0IjoxNjY0NDcwNzY5LCJleHAiOjE2NjQ0NzE5Njl9.aN2jC-JNgn5WGoPSvFgrpNsfuiL4YxUbWr5QwhANKyw

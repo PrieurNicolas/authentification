@@ -1,4 +1,4 @@
-import { ErrorRequestHandler, Request, Response } from "express";
+import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -15,6 +15,18 @@ const getUtilisateurs = (req: Request, res: Response) => {
     }
   );
 };
+
+export function authenticateToken(req: Request,res: Response){ //},next: NextFunction){
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if(token==null) return res.status(401).json({error: "Null token" });
+  jwt.verify(token,process.env.ACCESS_TOKEN_SECRET as string, (error,user)=>{
+    if (error) return res.status(403).json({error:error.message});
+    return res.status(201).json({user});
+    // req.user = user;
+    // next();
+  })
+}
 
 const loginUtilisateur = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -39,11 +51,7 @@ const loginUtilisateur = async (req: Request, res: Response) => {
           );
           if (!validPassword)
             return res.status(401).json({ error: "Mot de passe incorrect." });
-          console.log(8)
-          console.log(results.rows[0].id, results.rows[0].pseudo, results.rows[0].email)
           const tokens = await jhelper.jwtTokens(results.rows[0]);
-          console.log(9)
-          console.log(tokens)
           res.cookie('refresh_token', tokens.refreshToken,{httpOnly:true})
           res.json(tokens);
         } catch (error) {
@@ -187,4 +195,5 @@ module.exports = {
   removeUtilisateurs,
   updateUtilisateurs,
   loginUtilisateur,
+  authenticateToken,
 };

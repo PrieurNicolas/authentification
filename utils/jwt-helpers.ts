@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-function jwtTokens({id, pseudo, email}: {id:number; pseudo: string; email: string}) {
+export function jwtTokens({id, pseudo, email}: {id:number; pseudo: string; email: string}) {
     console.log(0)
     const user = {id, pseudo, email};
     console.log(1)
@@ -10,5 +10,3 @@ function jwtTokens({id, pseudo, email}: {id:number; pseudo: string; email: strin
     console.log(3)
     return ({accessToken,refreshToken});
 };
-
-module.exports = jwtTokens;
