@@ -6,6 +6,11 @@ const pool = require("./models/dbConfig");
 const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
 
+const refreshToken = (req: Request, res: Response) => {
+  const refreshT = req.cookies.refresh_token;
+  console.log(refreshT)
+}
+
 const getUtilisateurs = (req: Request, res: Response) => {
   pool.query(
     queries.getUtilisateurs,
@@ -196,4 +201,5 @@ module.exports = {
   updateUtilisateurs,
   loginUtilisateur,
   authenticateToken,
+  refreshToken,
 };

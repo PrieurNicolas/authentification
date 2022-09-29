@@ -11,3 +11,6 @@
 
 GET http://localhost:5000/api/v1/utilisateur
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicHNldWRvIjoiR2FyZmVsIiwiZW1haWwiOiJsYXNhbmdAY2F0LnVzIiwiaWF0IjoxNjY0NDcwNzY5LCJleHAiOjE2NjQ0NzE5Njl9.aN2jC-JNgn5WGoPSvFgrpNsfuiL4YxUbWr5QwhANKyw
+
+###
+GET http://localhost:5000/api/v1/auth/refresh_token

@@ -7,6 +7,7 @@ const router = Router();
 router.get('/', authenticateToken, controller.getUtilisateurs);
 router.post('/', controller.addUtilisateurs);
 router.get('/:id', controller.getUtilisateursById);
+router.get('/refresh_token', controller.refreshToken);
 router.put('/:id', controller.updateUtilisateurs);
 router.delete('/:id', controller.removeUtilisateurs);
 router.post('/login', controller.loginUtilisateur);
