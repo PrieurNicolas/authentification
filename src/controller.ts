@@ -1,10 +1,10 @@
 import { ErrorRequestHandler, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {jwtTokens} from '../utils/jwt-helpers.js'
 
 const pool = require("./models/dbConfig");
 const queries = require("./queries");
+const jhelper = require("../utils/jwt-helpers.ts");
 
 const getUtilisateurs = (req: Request, res: Response) => {
   pool.query(
@@ -17,9 +17,7 @@ const getUtilisateurs = (req: Request, res: Response) => {
 };
 
 const loginUtilisateur = async (req: Request, res: Response) => {
-  console.log("1");
   const { email, password } = req.body;
-  console.log("2");
   pool.query(
     queries.getUtilisateursByEmail,
     [email],
@@ -28,9 +26,7 @@ const loginUtilisateur = async (req: Request, res: Response) => {
         // if (error !== null) {
         //   return console.error("Error executing query");
         // }
-      console.log("3");
       if (results?.rows?.length === 0) {
-        console.log("3.5");
         return res.status(500).send("Email non trouvé, réessayez.");
       }
         } catch (error) {
@@ -43,11 +39,17 @@ const loginUtilisateur = async (req: Request, res: Response) => {
           );
           if (!validPassword)
             return res.status(401).json({ error: "Mot de passe incorrect." });
+          console.log(8)
+          console.log(results.rows[0].id, results.rows[0].pseudo, results.rows[0].email)
+          const tokens = await jhelper.jwtTokens(results.rows[0]);
+          console.log(9)
+          console.log(tokens)
+          res.cookie('refresh_token', tokens.refreshToken,{httpOnly:true})
+          res.json(tokens);
         } catch (error) {
           res.status(500).send(`Une erreur de hash est survenue.`);
         }
-      return res.status(200).json("Connexion Réussie.");
-      console.log("4");
+      //res.status(200).json("Connexion Réussie.");
     }
   );
 };
