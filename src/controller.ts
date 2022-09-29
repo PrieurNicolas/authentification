@@ -1,6 +1,7 @@
 import { ErrorRequestHandler, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {jwtTokens} from '../utils/jwt-helpers.js'
 
 const pool = require("./models/dbConfig");
 const queries = require("./queries");
@@ -23,26 +24,28 @@ const loginUtilisateur = async (req: Request, res: Response) => {
     queries.getUtilisateursByEmail,
     [email],
     async (error: ErrorRequestHandler, results: any) => {
-      //   try {
-      //   if (error !== null) {
-      //     return console.error("Error executing query");
-      //   }
+        try {
+        // if (error !== null) {
+        //   return console.error("Error executing query");
+        // }
       console.log("3");
-      if (results.rows.length === 0) {
+      if (results?.rows?.length === 0) {
         console.log("3.5");
-        res.status(500).send("Email non trouvé, réessayez.");
+        return res.status(500).send("Email non trouvé, réessayez.");
       }
-      //   } catch (error) {
-      //     res.status(500).send(`Une erreur d'authentification est survenue.`);
-      //   }
-      //   try {
-      //   } catch (error) {}
-      const validPassword = await bcrypt.compare(
-        password,
-        results.rows[0].password
-      );
-      if (!validPassword)
-        return res.status(401).json({ error: "Mot de passe incorrect." });
+        } catch (error) {
+          res.status(500).send(`Une erreur d'authentification est survenue.`);
+        }
+        try {
+          const validPassword = await bcrypt.compare(
+            password,
+            results.rows[0].password
+          );
+          if (!validPassword)
+            return res.status(401).json({ error: "Mot de passe incorrect." });
+        } catch (error) {
+          res.status(500).send(`Une erreur de hash est survenue.`);
+        }
       return res.status(200).json("Connexion Réussie.");
       console.log("4");
     }
