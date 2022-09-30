@@ -7,8 +7,11 @@ const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
 
 const refreshToken = (req: Request, res: Response) => {
+  try {
+  console.log(1)
   const refreshT = req.cookies.refresh_token;
   console.log(refreshT)
+  } catch {}
 }
 
 const getUtilisateurs = (req: Request, res: Response) => {
@@ -62,7 +65,6 @@ const loginUtilisateur = async (req: Request, res: Response) => {
         } catch (error) {
           res.status(500).send(`Une erreur de hash est survenue.`);
         }
-      //res.status(200).json("Connexion Réussie.");
     }
   );
 };
