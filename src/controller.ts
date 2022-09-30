@@ -1,17 +1,27 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { jwtTokens } from "~~/utils/jwt-helpers";
 
 const pool = require("./models/dbConfig");
 const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
 
-const refreshToken = (req: Request, res: Response) => {
+export const refreshToken = (req: Request, res: Response) => {
   try {
   console.log(1)
   const refreshT = req.cookies.refresh_token;
   console.log(refreshT)
-  } catch {}
+  if(refreshT === null) return res.status(401).json({error:'Null Refresh Token'});
+  jwt.verify(refreshT,process.env.REFRESH_TOKEN_SECRET as string, (error,user)=>{
+    if(error) return res.status(403).json({error:error.message});
+    let tokens = jwtTokens(user);
+    res.cookie('refresh_token', tokens.refreshToken, {httpOnly: true});
+    res.json(tokens);
+  })
+  } catch (error) {
+    return res.status(401).json({ error:error.message });
+  }
 }
 
 const getUtilisateurs = (req: Request, res: Response) => {
