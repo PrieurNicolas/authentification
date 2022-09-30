@@ -13,14 +13,14 @@ export const refreshToken = (req: Request, res: Response) => {
   const refreshT = req.cookies.refresh_token;
   console.log(refreshT)
   if(refreshT === null) return res.status(401).json({error:'Null Refresh Token'});
-  jwt.verify(refreshT,process.env.REFRESH_TOKEN_SECRET as string, (error,user)=>{
+  jwt.verify(refreshT,process.env.REFRESH_TOKEN_SECRET as string, (error:any,user:any)=>{
     if(error) return res.status(403).json({error:error.message});
     let tokens = jwtTokens(user);
     res.cookie('refresh_token', tokens.refreshToken, {httpOnly: true});
     res.json(tokens);
   })
   } catch (error) {
-    return res.status(401).json({ error:error.message });
+    return res.status(401).json({ error:"TYPESCRYPT DEFAULT ERROR" });
   }
 }
 
