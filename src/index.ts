@@ -15,7 +15,7 @@ const app = express();
 const logRoutes = require('../src/routes.ts');
 const corsOptions = {credentials:true, origin: process.env.URL }
 
-app.use(express.json());
+//app.use(express.json());
 
 app.use(express.json());
 app.use(cors());

@@ -10,7 +10,10 @@ Content-Type: application/json
 }
 ###
 GET http://localhost:5000/api/utilisateur
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicHNldWRvIjoiR2FyZmVsIiwiZW1haWwiOiJsYXNhbmdAY2F0LnVzIiwiaWF0IjoxNjY0NTI5ODMzLCJleHAiOjE2NjQ1MzEwMzN9.HNmxd9jAsgjVGd6kcnM42Ne8o1zjwq8dJDzwUSAXFp0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicHNldWRvIjoiR2FyZmVsIiwiZW1haWwiOiJsYXNhbmdAY2F0LnVzIiwiaWF0IjoxNjY0NTQxNDc1LCJleHAiOjE2NjYyNjk0NzV9.twXORBmze8ydkaUe9lbGZxbik7Qj18whGJasAebw67U
 
 ###
 GET http://localhost:5000/api/auth/refresh_token
+
+###
+DELETE http://localhost:5000/api/auth/refresh_token

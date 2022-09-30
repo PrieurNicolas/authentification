@@ -7,7 +7,7 @@ const pool = require("./models/dbConfig");
 const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
 
-export const refreshToken = (req: Request, res: Response) => {
+const refreshToken = (req: Request, res: Response) => {
   try {
   console.log(1)
   const refreshT = req.cookies.refresh_token;
@@ -20,7 +20,16 @@ export const refreshToken = (req: Request, res: Response) => {
     res.json(tokens);
   })
   } catch (error) {
-    return res.status(401).json({ error:"TYPESCRYPT DEFAULT ERROR" });
+    return res.status(401).json({ error:"Could not refresh token." });
+  }
+}
+
+const deleteToken = (req: Request, res: Response) => {
+  try {
+    res.clearCookie('refresh_token');
+    return res.status(200).json({message:'refresh token deleted'})
+  } catch (error) {
+    return res.status(401).json({ error:"Could not delete token." });
   }
 }
 
@@ -152,7 +161,7 @@ const removeUtilisateurs = (req: Request, res: Response) => {
     queries.getUtilisateursById,
     [id],
     (error: ErrorRequestHandler, results: any) => {
-      const noUtilisateursFound = !results.rows.length;
+      const noUtilisateursFound = !results?.rows?.length;
       if (noUtilisateursFound) {
         res.status(500).send(`L'utilisateur n'existe pas.`);
       } else {
@@ -214,4 +223,5 @@ module.exports = {
   loginUtilisateur,
   authenticateToken,
   refreshToken,
+  deleteToken
 };
