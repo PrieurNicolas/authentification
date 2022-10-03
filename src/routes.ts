@@ -4,8 +4,6 @@ const controller = require('./controller');
 
 const router = Router();
 
-router.get('/refresh_token', controller.refreshToken);
-router.delete('/refresh_token', controller.deleteToken);
 router.get('/', authenticateToken, controller.getUtilisateurs);
 router.post('/', controller.addUtilisateurs);
 router.get('/:id', controller.getUtilisateursById);
