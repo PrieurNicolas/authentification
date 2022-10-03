@@ -1,16 +1,23 @@
-POST http://localhost:5000/api/auth/login
+POST http://localhost:5000/api/utilisateur
 Content-Type: application/json
 
 {
     "email": "lasang@cat.us",
     "password": "123oui",
     "pseudo": "Garfel",
-    "bio": "Gourmand",
-    "token": "B"
+    "bio": "Gourmand"
+}
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "lasang@cat.us",
+    "password": "123oui"
 }
 ###
 GET http://localhost:5000/api/utilisateur
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwicHNldWRvIjoiR2FyZmVsIiwiZW1haWwiOiJsYXNhbmdAY2F0LnVzIiwiaWF0IjoxNjY0Nzg5OTA5LCJleHAiOjE2NjY1MTc5MDl9.MpKv2oAP4WdJXpciDLvzo9DIMfKp37VbtVRUjYV3jyc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODIsInBzZXVkbyI6IkdhcmZlbCIsImVtYWlsIjoibGFzYW5nQGNhdC51cyIsImlhdCI6MTY2NDc5NjQxNiwiZXhwIjoxNjY2NTI0NDE2fQ.s8k5ZX5mqe-Jd7W5a9pS2fJiUUwX48EeMPfCCdu7_UI
 
 ###
 GET http://localhost:5000/api/auth/refresh_token
