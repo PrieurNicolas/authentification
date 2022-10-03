@@ -13,10 +13,6 @@ dotenv.config();
 
 const app = express();
 const logRoutes = require('../src/routes.ts');
-<<<<<<< HEAD
-=======
-//const authRoutes = require('../src/auth-routes.ts')
->>>>>>> 532d0db04f8f6d74cfe607865ace400cd965d4cd
 const corsOptions = {credentials:true, origin: process.env.URL }
 
 //app.use(express.json());
