@@ -89,7 +89,7 @@ const loginUtilisateur = async (req: Request, res: Response) => {
 };
 
 const addUtilisateurs = async (req: Request, res: Response) => {
-  const { pseudo, email, bio, password, token } = req.body;
+  const { pseudo, email, bio, password} = req.body;
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     pool.query(
@@ -118,7 +118,7 @@ const addUtilisateurs = async (req: Request, res: Response) => {
             //add utilisateur to bdd
             pool.query(
               queries.addUtilisateurs,
-              [pseudo, email, bio, hashedPassword, token],
+              [pseudo, email, bio, hashedPassword],
               (error: ErrorRequestHandler, results: any) => {
                 res
                   .status(201)
