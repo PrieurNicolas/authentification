@@ -9,13 +9,13 @@ const jhelper = require("../utils/jwt-helpers.ts");
 
 const refreshToken = (req: Request, res: Response) => {
   try {
-  console.log(1)
   const refreshT = req.cookies.refresh_token;
   console.log(refreshT)
   if(refreshT === null) return res.status(401).json({error:'Null Refresh Token'});
   jwt.verify(refreshT,process.env.REFRESH_TOKEN_SECRET as string, (error:any,user:any)=>{
     if(error) return res.status(403).json({error:error.message});
     let tokens = jwtTokens(user);
+    // TODO delete v
     res.cookie('refresh_token', tokens.refreshToken, {httpOnly: true});
     res.json(tokens);
   })
@@ -23,7 +23,7 @@ const refreshToken = (req: Request, res: Response) => {
     return res.status(401).json({ error:"Could not refresh token." });
   }
 }
-
+// TODO delete v
 const deleteToken = (req: Request, res: Response) => {
   try {
     res.clearCookie('refresh_token');
@@ -62,9 +62,6 @@ const loginUtilisateur = async (req: Request, res: Response) => {
     [email],
     async (error: ErrorRequestHandler, results: any) => {
         try {
-        // if (error !== null) {
-        //   return console.error("Error executing query");
-        // }
       if (results?.rows?.length === 0) {
         return res.status(500).send("Email non trouvé, réessayez.");
       }
@@ -79,6 +76,7 @@ const loginUtilisateur = async (req: Request, res: Response) => {
           if (!validPassword)
             return res.status(401).json({ error: "Mot de passe incorrect." });
           const tokens = await jhelper.jwtTokens(results.rows[0]);
+          // TODO delete v
           res.cookie('refresh_token', tokens.refreshToken,{httpOnly:true})
           res.json(tokens);
         } catch (error) {
