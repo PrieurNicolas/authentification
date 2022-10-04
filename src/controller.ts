@@ -49,8 +49,6 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
   if (token == null) return res.status(401).json({ error: "Null token" });
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (error, user) => {
     if (error) return res.status(403).json({ error: error.message });
-    //return res.status(201).json({user});
-    // req.user = user;
     next();
   })
 }
@@ -62,9 +60,6 @@ const loginUtilisateur = async (req: Request, res: Response) => {
     [email],
     async (error: ErrorRequestHandler, results: any) => {
       try {
-        // if (error !== null) {
-        //   return console.error("Error executing query");
-        // }
         if (results?.rows?.length === 0) {
           return res.status(500).send("Email non trouvé, réessayez.");
         }
@@ -91,13 +86,16 @@ const loginUtilisateur = async (req: Request, res: Response) => {
 const addUtilisateurs = async (req: Request, res: Response) => {
   const { pseudo, email, bio, password } = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    pool.query(
-      queries.checkEmailExists,
-      [email],
-      (error: ErrorRequestHandler, results: any) => {
+    pool.query(queries.checkEmailExists,[email],(error: ErrorRequestHandler, results: any) => {
         if (results.rows.length) {
           res.status(500).send("L'email est déjà utilisé.");
+        }
+        })} catch (error) {res.status(500).send(`Une erreur de création de compte est survenue.`);}
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    pool.query(queries.checkPseudoExists,[pseudo],(error: ErrorRequestHandler, results: any) => {
+        if (results.rows.length) {
+          res.status(500).send("Le pseudo est déjà utilisé.");
         }
         else {
           pool.query(
@@ -109,7 +107,7 @@ const addUtilisateurs = async (req: Request, res: Response) => {
                 .send("Création du compte utilisateur, fait avec succes !");
         })}})}
   catch (error) {
-    res.status(500).send(`Une erreur de mot de passe est survenue.`);
+    res.status(500).send(`Une erreur de création de compte est survenue.`);
   }}
 
 const getUtilisateursById = (req: Request, res: Response) => {
