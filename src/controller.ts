@@ -9,27 +9,27 @@ const jhelper = require("../utils/jwt-helpers.ts");
 
 const refreshToken = (req: Request, res: Response) => {
   try {
-  const refreshT = req.cookies.refresh_token;
-  console.log(refreshT)
-  if(refreshT === null) return res.status(401).json({error:'Null Refresh Token'});
-  jwt.verify(refreshT,process.env.REFRESH_TOKEN_SECRET as string, (error:any,user:any)=>{
-    if(error) return res.status(403).json({error:error.message});
-    let tokens = jwtTokens(user);
-    // TODO delete v
-    res.cookie('refresh_token', tokens.refreshToken, {httpOnly: true});
-    res.json(tokens);
-  })
+    console.log(1)
+    const refreshT = req.cookies.refresh_token;
+    console.log(refreshT)
+    if (refreshT === null) return res.status(401).json({ error: 'Null Refresh Token' });
+    jwt.verify(refreshT, process.env.REFRESH_TOKEN_SECRET as string, (error: any, user: any) => {
+      if (error) return res.status(403).json({ error: error.message });
+      let tokens = jwtTokens(user);
+      res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true });
+      res.json(tokens);
+    })
   } catch (error) {
-    return res.status(401).json({ error:"Could not refresh token." });
+    return res.status(401).json({ error: "Could not refresh token." });
   }
 }
-// TODO delete v
+
 const deleteToken = (req: Request, res: Response) => {
   try {
     res.clearCookie('refresh_token');
-    return res.status(200).json({message:'refresh token deleted'})
+    return res.status(200).json({ message: 'refresh token deleted' })
   } catch (error) {
-    return res.status(401).json({ error:"Could not delete token." });
+    return res.status(401).json({ error: "Could not delete token." });
   }
 }
 
@@ -43,12 +43,12 @@ const getUtilisateurs = (req: Request, res: Response) => {
   );
 };
 
-export function authenticateToken(req: Request,res: Response,next: NextFunction){
+export function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if(token==null) return res.status(401).json({error: "Null token" });
-  jwt.verify(token,process.env.ACCESS_TOKEN_SECRET as string, (error,user)=>{
-    if (error) return res.status(403).json({error:error.message});
+  if (token == null) return res.status(401).json({ error: "Null token" });
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (error, user) => {
+    if (error) return res.status(403).json({ error: error.message });
     //return res.status(201).json({user});
     // req.user = user;
     next();
@@ -61,33 +61,35 @@ const loginUtilisateur = async (req: Request, res: Response) => {
     queries.getUtilisateursByEmail,
     [email],
     async (error: ErrorRequestHandler, results: any) => {
-        try {
-      if (results?.rows?.length === 0) {
-        return res.status(500).send("Email non trouvé, réessayez.");
+      try {
+        // if (error !== null) {
+        //   return console.error("Error executing query");
+        // }
+        if (results?.rows?.length === 0) {
+          return res.status(500).send("Email non trouvé, réessayez.");
+        }
+      } catch (error) {
+        res.status(500).send(`Une erreur d'authentification est survenue.`);
       }
-        } catch (error) {
-          res.status(500).send(`Une erreur d'authentification est survenue.`);
-        }
-        try {
-          const validPassword = await bcrypt.compare(
-            password,
-            results.rows[0].password
-          );
-          if (!validPassword)
-            return res.status(401).json({ error: "Mot de passe incorrect." });
-          const tokens = await jhelper.jwtTokens(results.rows[0]);
-          // TODO delete v
-          res.cookie('refresh_token', tokens.refreshToken,{httpOnly:true})
-          res.json(tokens);
-        } catch (error) {
-          res.status(500).send(`Une erreur de hash est survenue.`);
-        }
+      try {
+        const validPassword = await bcrypt.compare(
+          password,
+          results.rows[0].password
+        );
+        if (!validPassword)
+          return res.status(401).json({ error: "Mot de passe incorrect." });
+        const tokens = await jhelper.jwtTokens(results.rows[0]);
+        res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true })
+        res.json(tokens);
+      } catch (error) {
+        res.status(500).send(`Une erreur de hash est survenue.`);
+      }
     }
   );
 };
 
 const addUtilisateurs = async (req: Request, res: Response) => {
-  const { pseudo, email, bio, password} = req.body;
+  const { pseudo, email, bio, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     pool.query(
@@ -96,41 +98,19 @@ const addUtilisateurs = async (req: Request, res: Response) => {
       (error: ErrorRequestHandler, results: any) => {
         if (results.rows.length) {
           res.status(500).send("L'email est déjà utilisé.");
-        } else {
-          if (pseudo == "") {
-            res.send(`Entrez un pseudo.`);
-          } else if (pseudo.length >= 30) {
-            res.send(`Pseudo trop long.`);
-          } else if (email == "") {
-            res.send(`Entrez un email.`);
-          } else if (email.length >= 50) {
-            res.send(`Email trop long`);
-          } else if (bio == "") {
-            res.send(`Entrez une bio.`);
-          } else if (password == "") {
-            res.send(`Entrez un mot de passe.`);
-          }
-          if (password.length < 5) {
-            res.send(`Mot de passe trop petit.`);
-          } else {
-            //add utilisateur to bdd
-            pool.query(
-              queries.addUtilisateurs,
-              [pseudo, email, bio, hashedPassword],
-              (error: ErrorRequestHandler, results: any) => {
-                res
-                  .status(201)
-                  .send("Création du compte utilisateur, fait avec succes !");
-              }
-            );
-          }
         }
-      }
-    );
-  } catch (error) {
+        else {
+          pool.query(
+            queries.addUtilisateurs,
+            [pseudo, email, bio, hashedPassword],
+            (error: ErrorRequestHandler, results: any) => {
+              res
+                .status(201)
+                .send("Création du compte utilisateur, fait avec succes !");
+        })}})}
+  catch (error) {
     res.status(500).send(`Une erreur de mot de passe est survenue.`);
-  }
-};
+  }}
 
 const getUtilisateursById = (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
