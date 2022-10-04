@@ -6,7 +6,6 @@ const addUtilisateurs =
 const removeUtilisateurs = "DELETE FROM users WHERE id = $1";
 const updateUtilisateurs = "UPDATE users SET pseudo = $1, email = $2, bio = $3 WHERE id = $4";
 const getUtilisateursByEmail = "SELECT * FROM users WHERE email = $1"
-// const updateEmailUtilisateur = "UPDATE users SET email = $1 WHERE id = $2";
 
 module.exports = {
     getUtilisateurs,
@@ -15,6 +14,5 @@ module.exports = {
     addUtilisateurs,
     removeUtilisateurs,
     updateUtilisateurs,
-    getUtilisateursByEmail,
-    // updateEmailUtilisateur,
+    getUtilisateursByEmail
 };
