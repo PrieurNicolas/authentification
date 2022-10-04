@@ -16,20 +16,10 @@ const refreshToken = (req: Request, res: Response) => {
     jwt.verify(refreshT, process.env.REFRESH_TOKEN_SECRET as string, (error: any, user: any) => {
       if (error) return res.status(403).json({ error: error.message });
       let tokens = jwtTokens(user);
-      res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true });
       res.json(tokens);
     })
   } catch (error) {
     return res.status(401).json({ error: "Could not refresh token." });
-  }
-}
-
-const deleteToken = (req: Request, res: Response) => {
-  try {
-    res.clearCookie('refresh_token');
-    return res.status(200).json({ message: 'refresh token deleted' })
-  } catch (error) {
-    return res.status(401).json({ error: "Could not delete token." });
   }
 }
 
@@ -74,7 +64,6 @@ const loginUtilisateur = async (req: Request, res: Response) => {
         if (!validPassword)
           return res.status(401).json({ error: "Mot de passe incorrect." });
         const tokens = await jhelper.jwtTokens(results.rows[0]);
-        res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true })
         res.json(tokens);
       } catch (error) {
         res.status(500).send(`Une erreur de hash est survenue.`);
@@ -198,6 +187,5 @@ module.exports = {
   updateUtilisateurs,
   loginUtilisateur,
   authenticateToken,
-  refreshToken,
-  deleteToken
+  refreshToken
 };
