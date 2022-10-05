@@ -14,6 +14,8 @@ export const users = sequelize.define('users', {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
     },
-  password: DataTypes.STRING,
+  password: {
+    type: DataTypes.STRING,
+  },
   bio: DataTypes.STRING
 });

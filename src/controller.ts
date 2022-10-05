@@ -50,32 +50,20 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
 
 const loginUtilisateur = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  pool.query(
-    queries.getUtilisateursByEmail,
-    [email],
-    async (error: ErrorRequestHandler, results: any) => {
-      try {
-        if (results?.rows?.length === 0) {
-          return res.status(500).send("Email non trouvé, réessayez.");
-        }
-      } catch (error) {
-        res.status(500).send(`Une erreur d'authentification est survenue.`);
-      }
-      try {
-        const validPassword = await bcrypt.compare(
-          password,
-          results.rows[0].password
-        );
-        if (!validPassword)
-          return res.status(401).json({ error: "Mot de passe incorrect." });
-        const tokens = await jhelper.jwtTokens(results.rows[0]);
-        res.json(tokens);
-      } catch (error) {
-        res.status(500).send(`Une erreur de hash est survenue.`);
-      }
-    }
-  );
-};
+  try {
+  const userfromEmail = await users.findOne({where:{email:email}});
+  if (!userfromEmail) {
+    return res.status(200).send("Email non trouvé, réessayez.");
+  }
+  const validPassword = await bcrypt.compare(password,userfromEmail.getDataValue('password'))
+  if (!validPassword)
+    return res.status(200).json({ error: "Mot de passe incorrect." });
+  const tokens = await jhelper.jwtTokens(userfromEmail.getDataValue('password'));
+  res.json(tokens);
+  } catch (error) {
+    res.status(500).send(`Une erreur d'authentification est survenue.`);
+  }
+}
 
 const addUtilisateurs = async (req: Request, res: Response) => {
   const { pseudo, email, bio, password } = req.body;
@@ -84,11 +72,11 @@ const addUtilisateurs = async (req: Request, res: Response) => {
     if (checkEmail) {
       return res.status(200).send("L'email est déjà utilisé.");
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const checkPseudo = await users.findOne({where:{pseudo:pseudo}});
     if (checkPseudo) {
       return res.status(200).send("Le pseudo est déjà utilisé.");
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = users.create({
       pseudo: pseudo,
       email: email,
