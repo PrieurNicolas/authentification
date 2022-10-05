@@ -95,31 +95,22 @@ const getUtilisateursById = async (req: Request, res: Response) => {
     }
     res.status(200).json(userfromId);
   } catch (error) {
-        res.send(error);
-    }
+    return res.send(error);
+  }
 }
 
-const removeUtilisateurs = (req: Request, res: Response) => {
+const removeUtilisateurs = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-
-  pool.query(
-    queries.getUtilisateursById,
-    [id],
-    (error: ErrorRequestHandler, results: any) => {
-      const noUtilisateursFound = !results?.rows?.length;
-      if (noUtilisateursFound) {
-        res.status(500).send(`L'utilisateur n'existe pas.`);
-      } else {
-        pool.query(
-          queries.removeUtilisateurs,
-          [id],
-          (error: ErrorRequestHandler, results: any) => {
-            res.status(200).send(`Utilisateur supprimé avec succes.`);
-          }
-        );
-      }
+  const userfromId = await users.findByPk(parseInt(req.params.id));
+  try {
+    if (!userfromId) {
+      return res.status(404).send("L'utilisateur n'existe pas.")
     }
-  );
+    await users.destroy({where:{id:userfromId.getDataValue('id')}})
+    return res.status(200).send(`Utilisateur supprimé avec succes.`);
+  } catch (error) {
+    return res.status(500).send(`Une erreur de suppression de compte est survenue.`);
+  }
 };
 
 const updateUtilisateurs = (req: Request, res: Response) => {

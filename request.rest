@@ -23,4 +23,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODIsInBzZXVkb
 GET http://localhost:5000/api/auth/refresh_token
 
 ###
-DELETE http://localhost:5000/api/auth/refresh_token
+DELETE http://localhost:5000/api/utilisateur/84
