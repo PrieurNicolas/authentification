@@ -3,11 +3,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "~~/utils/jwt-helpers";
 import { users } from "./models/users-models";
-import sequelize from "sequelize";
 
 const jhelper = require("../utils/jwt-helpers.ts");
 
-const refreshToken = (req: Request, res: Response) => {
+export const refreshToken = (req: Request, res: Response) => {
   try {
     const accessT = req.cookies.access_token;
     const refreshT = req.cookies.refresh_token;
@@ -27,7 +26,7 @@ const refreshToken = (req: Request, res: Response) => {
   }
 }
 
-const getUtilisateurs = async (req: Request, res: Response) => {
+export const getUtilisateurs = async (req: Request, res: Response) => {
   const allUsers = await users.findAll({order: ['id']});
   if (!allUsers) {
     return res.status(200).send("Aucun utilisateur trouvé, réessayez.");
@@ -45,7 +44,7 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
   })
 }
 
-const loginUtilisateur = async (req: Request, res: Response) => {
+export const loginUtilisateur = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
   const userfromEmail = await users.findOne({where:{email:email}});
@@ -62,7 +61,7 @@ const loginUtilisateur = async (req: Request, res: Response) => {
   }
 }
 
-const addUtilisateurs = async (req: Request, res: Response) => {
+export const addUtilisateurs = async (req: Request, res: Response) => {
   const { pseudo, email, bio, password } = req.body;
   try {
     const checkEmail = await users.findOne({where:{email:email}});
@@ -86,7 +85,7 @@ const addUtilisateurs = async (req: Request, res: Response) => {
   }
 }
 
-const getUtilisateursById = async (req: Request, res: Response) => {
+export const getUtilisateursById = async (req: Request, res: Response) => {
   const userfromId = await users.findByPk(parseInt(req.params.id));
   try {
     if (!userfromId) {
@@ -98,7 +97,7 @@ const getUtilisateursById = async (req: Request, res: Response) => {
   }
 }
 
-const removeUtilisateurs = async (req: Request, res: Response) => {
+export const removeUtilisateurs = async (req: Request, res: Response) => {
   const userfromId = await users.findByPk(parseInt(req.params.id));
   try {
     if (!userfromId) {
@@ -111,7 +110,7 @@ const removeUtilisateurs = async (req: Request, res: Response) => {
   }
 };
 
-const updateUtilisateurs = async (req: Request, res: Response) => {
+export const updateUtilisateurs = async (req: Request, res: Response) => {
   const { pseudo, email, bio, password } = req.body;
   const userfromId = await users.findByPk(parseInt(req.params.id));
   try {
@@ -143,15 +142,4 @@ const updateUtilisateurs = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(500).send(`Une erreur de mise à jour de compte est survenue.`);
   }
-};
-
-module.exports = {
-  getUtilisateurs,
-  getUtilisateursById,
-  addUtilisateurs,
-  removeUtilisateurs,
-  updateUtilisateurs,
-  loginUtilisateur,
-  authenticateToken,
-  refreshToken
 };
