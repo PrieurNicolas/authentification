@@ -1,11 +1,9 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "~~/utils/jwt-helpers";
-import { users, sequelize } from "./models/users-models";
-import { pool } from "./models/dbConfig";
+import { users } from "./models/users-models";
 
-const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
 
 const refreshToken = (req: Request, res: Response) => {
@@ -100,7 +98,6 @@ const getUtilisateursById = async (req: Request, res: Response) => {
 }
 
 const removeUtilisateurs = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
   const userfromId = await users.findByPk(parseInt(req.params.id));
   try {
     if (!userfromId) {
@@ -113,41 +110,25 @@ const removeUtilisateurs = async (req: Request, res: Response) => {
   }
 };
 
-const updateUtilisateurs = (req: Request, res: Response) => {
+const updateUtilisateurs = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const { pseudo, email, bio } = req.body;
-
-  pool.query(
-    queries.getUtilisateursById,
-    [id],
-    (error: ErrorRequestHandler, results: any) => {
-      const noUtilisateursFound = !results.rows.length;
-      if (noUtilisateursFound) {
-        res.status(500).send(`L'utilisateur n'existe pas.`);
-      } else {
-        const pseudo2 = pseudo;
-        const email2 = email;
-        const bio2 = bio;
-
-        if (pseudo == "") {
-          res.send(`Entrez un pseudo.`);
-        } else if (email == "") {
-          res.send(`Entrez un email.`);
-        } else if (bio == "") {
-          res.send(`Entrez une bio.`);
-        } else {
-          pool.query(
-            queries.updateUtilisateurs,
-            [pseudo2, email2, bio2, id],
-            (error: ErrorRequestHandler, results: any) => {
-              if (error) throw error;
-              res.status(200).send(`l'utilisateur à bien etait mis à jour`);
-            }
-          );
-        }
-      }
+  const userfromId = await users.findByPk(parseInt(req.params.id));
+  try {
+    if (!userfromId) {
+      return res.status(404).send("L'utilisateur n'existe pas.")
     }
-  );
+    if (userfromId.getDataValue('pseudo') != pseudo)
+      userfromId.setDataValue('pseudo', pseudo)
+    if (userfromId.getDataValue('email') != email)
+      userfromId.setDataValue('email', email)
+    if (userfromId.getDataValue('bio') != bio)
+      userfromId.setDataValue('bio', bio)
+    await userfromId.save();
+    return res.status(200).send(`Utilisateur mis à jour avec succes.`);
+  } catch (error) {
+    return res.status(500).send(`Une erreur de mise à jour de compte est survenue.`);
+  }
 };
 
 module.exports = {
