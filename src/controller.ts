@@ -26,7 +26,7 @@ const refreshToken = (req: Request, res: Response) => {
     return res.status(401).json({ error: "Could not refresh token." });
   }
 }
-//TODO SORT BY ID
+
 const getUtilisateurs = async (req: Request, res: Response) => {
   const allUsers = await users.findAll({order: ['id']});
   if (!allUsers) {
@@ -118,16 +118,24 @@ const updateUtilisateurs = async (req: Request, res: Response) => {
     if (!userfromId) {
       return res.status(404).send("L'utilisateur n'existe pas.")
     }
-    //TODO EMAIL AND PSEUDO CHECK EXIST
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       userfromId.setDataValue('password', hashedPassword)
     }
     if (pseudo && userfromId.getDataValue('pseudo') != pseudo) {
+      const userfromPseudo = await users.findOne({where:{pseudo:pseudo}});
+      if (userfromPseudo) {
+        return res.status(200).send("Pseudo dupliqué, mise à jour annulée.");
+      }
       userfromId.setDataValue('pseudo', pseudo);
     } 
-    if (email && userfromId.getDataValue('email') != email)
+    if (email && userfromId.getDataValue('email') != email) {
+      const userfromEmail = await users.findOne({where:{email:email}});
+      if (userfromEmail) {
+        return res.status(200).send("Email dupliqué, mise à jour annulée.");
+      }
       userfromId.setDataValue('email', email);
+    }
     if (userfromId.getDataValue('bio') != bio)
       userfromId.setDataValue('bio', bio);
     await userfromId.save();
