@@ -28,14 +28,12 @@ const refreshToken = (req: Request, res: Response) => {
   }
 }
 
-const getUtilisateurs = (req: Request, res: Response) => {
-  pool.query(
-    queries.getUtilisateurs,
-    (error: ErrorRequestHandler, results: any) => {
-      if (error) throw error;
-      res.status(200).json(results.rows);
-    }
-  );
+const getUtilisateurs = async (req: Request, res: Response) => {
+  const allUsers = await users.findAll();
+  if (!allUsers) {
+    return res.status(200).send("Aucun utilisateur trouvé, réessayez.");
+  }
+  res.status(200).json(allUsers)
 };
 
 export function authenticateToken(req: Request, res: Response, next: NextFunction) {
