@@ -2,12 +2,11 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "~~/utils/jwt-helpers";
-import { User } from "./models/users-models";
+import { users, sequelize } from "./models/users-models";
+import { pool } from "./models/dbConfig";
 
-const pool = require("./models/dbConfig");
 const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
-const { seqlz } = require('sequelize');
 
 const refreshToken = (req: Request, res: Response) => {
   try {
@@ -81,32 +80,26 @@ const loginUtilisateur = async (req: Request, res: Response) => {
 const addUtilisateurs = async (req: Request, res: Response) => {
   const { pseudo, email, bio, password } = req.body;
   try {
-    pool.query(queries.checkEmailExists,[email],(error: ErrorRequestHandler, results: any) => {
-        if (results.rows.length) {
-          res.status(500).send("L'email est déjà utilisé.");
-        }
-        })} catch (error) {res.status(500).send(`Une erreur de création de compte est survenue.`);}
-  try {
+    const checkEmail = await users.findOne({where:{email:email}});
+    if (checkEmail) {
+      return res.status(200).send("L'email est déjà utilisé.");
+    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    pool.query(queries.checkPseudoExists,[pseudo],(error: ErrorRequestHandler, results: any) => {
-        if (results.rows.length) {
-          res.status(500).send("Le pseudo est déjà utilisé.");
-        }
-        else {
-          const user = User.create({
-            pseudo: pseudo,
-            email: email,
-            bio: bio,
-            password: hashedPassword
-          });
-          res.status(201).send("Création du compte utilisateur fait avec succès !");
-        //   pool.query(queries.addUtilisateurs,[pseudo, email, bio, hashedPassword],(error: ErrorRequestHandler, results: any) => {
-        //       res.status(201).send("Création du compte utilisateur fait avec succes !");
-        // })
-      }})}
-  catch (error) {
-    res.status(500).send(`Une erreur de création de compte est survenue.`);
-  }}
+    const checkPseudo = await users.findOne({where:{pseudo:pseudo}});
+    if (checkPseudo) {
+      return res.status(200).send("Le pseudo est déjà utilisé.");
+    }
+    const user = users.create({
+      pseudo: pseudo,
+      email: email,
+      bio: bio,
+      password: hashedPassword
+    });
+    return res.status(201).send("Création du compte utilisateur fait avec succès !");
+  } catch (error) {
+    return res.status(500).send(`Une erreur de création de compte est survenue.`);
+  }
+}
 
 const getUtilisateursById = (req: Request, res: Response) => {
   const id = parseInt(req.params.id);

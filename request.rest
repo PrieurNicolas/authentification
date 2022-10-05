@@ -2,9 +2,9 @@ POST http://localhost:5000/api/utilisateur
 Content-Type: application/json
 
 {
-    "email": "lasang@cat.us",
+    "email": "lasangerra@cat.us",
     "password": "123oui",
-    "pseudo": "Garfel",
+    "pseudo": "Garfelrera",
     "bio": "Gourmand"
 }
 ###

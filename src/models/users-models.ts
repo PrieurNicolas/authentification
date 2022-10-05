@@ -1,7 +1,8 @@
 import { Sequelize, Model, DataTypes } from 'sequelize';
+import { DBlogs } from './dbConfig';
 
-const sequelize = new Sequelize('sqlite::memory:');
-export const User = sequelize.define('User', {
+export const sequelize = new Sequelize(`${DBlogs.dialect}://${DBlogs.user}:${DBlogs.password}@${DBlogs.host}:${DBlogs.port}/${DBlogs.database}`);
+export const users = sequelize.define('users', {
   pseudo: DataTypes.STRING,
   id: {
     type: DataTypes.INTEGER,
