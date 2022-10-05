@@ -2,17 +2,23 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "~~/utils/jwt-helpers";
+import { User } from "./models/users-models";
 
 const pool = require("./models/dbConfig");
 const queries = require("./queries");
 const jhelper = require("../utils/jwt-helpers.ts");
+const { seqlz } = require('sequelize');
 
 const refreshToken = (req: Request, res: Response) => {
   try {
-    console.log(1)
+    const accessT = req.cookies.access_token;
     const refreshT = req.cookies.refresh_token;
     console.log(refreshT)
-    if (refreshT === null) return res.status(401).json({ error: 'Null Refresh Token' });
+    if (refreshT === null) return res.status(401).json({ error: 'Null Refresh Token.' });
+    if (accessT === null) return res.status(401).json({ error: 'Null Access Token.' });
+    jwt.verify(accessT, process.env.ACCESS_TOKEN_SECRET as string, (error: any, user: any) => {
+      if (error) return res.status(403).json({ error: error.message });
+    })
     jwt.verify(refreshT, process.env.REFRESH_TOKEN_SECRET as string, (error: any, user: any) => {
       if (error) return res.status(403).json({ error: error.message });
       let tokens = jwtTokens(user);
@@ -87,14 +93,17 @@ const addUtilisateurs = async (req: Request, res: Response) => {
           res.status(500).send("Le pseudo est déjà utilisé.");
         }
         else {
-          pool.query(
-            queries.addUtilisateurs,
-            [pseudo, email, bio, hashedPassword],
-            (error: ErrorRequestHandler, results: any) => {
-              res
-                .status(201)
-                .send("Création du compte utilisateur, fait avec succes !");
-        })}})}
+          const user = User.create({
+            pseudo: pseudo,
+            email: email,
+            bio: bio,
+            password: hashedPassword
+          });
+          res.status(201).send("Création du compte utilisateur fait avec succès !");
+        //   pool.query(queries.addUtilisateurs,[pseudo, email, bio, hashedPassword],(error: ErrorRequestHandler, results: any) => {
+        //       res.status(201).send("Création du compte utilisateur fait avec succes !");
+        // })
+      }})}
   catch (error) {
     res.status(500).send(`Une erreur de création de compte est survenue.`);
   }}
