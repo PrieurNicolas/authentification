@@ -26,11 +26,9 @@ GET http://localhost:5000/api/auth/refresh_token
 DELETE http://localhost:5000/api/utilisateur/84
 
 ###
-PUT http://localhost:5000/api/utilisateur/2
+PUT http://localhost:5000/api/utilisateur/79
 Content-Type: application/json
 
 {
-    "email": "julie.arden@live.fr",
-    "pseudo": "JuliA",
-    "bio": "Peintre à Arcachon"
+    "password": "WAW"
 }

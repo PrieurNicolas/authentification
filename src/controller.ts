@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "~~/utils/jwt-helpers";
 import { users } from "./models/users-models";
+import sequelize from "sequelize";
 
 const jhelper = require("../utils/jwt-helpers.ts");
 
@@ -25,9 +26,9 @@ const refreshToken = (req: Request, res: Response) => {
     return res.status(401).json({ error: "Could not refresh token." });
   }
 }
-
+//TODO SORT BY ID
 const getUtilisateurs = async (req: Request, res: Response) => {
-  const allUsers = await users.findAll();
+  const allUsers = await users.findAll({order: ['id']});
   if (!allUsers) {
     return res.status(200).send("Aucun utilisateur trouvé, réessayez.");
   }
@@ -117,7 +118,7 @@ const updateUtilisateurs = async (req: Request, res: Response) => {
     if (!userfromId) {
       return res.status(404).send("L'utilisateur n'existe pas.")
     }
-    //TODO PASSWORD
+    //TODO EMAIL AND PSEUDO CHECK EXIST
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       userfromId.setDataValue('password', hashedPassword)
