@@ -113,7 +113,6 @@ export const removeUtilisateurs = async (req: Request, res: Response) => {
 export const updateUtilisateurs = async (req: Request, res: Response) => {
   const { pseudo, email, bio, password } = req.body;
   const userfromId = await users.findByPk(parseInt(req.params.id));
-  let ismodified = 0;
   try {
     if (!userfromId) {
       return res.status(404).send("L'utilisateur n'existe pas.")
@@ -121,7 +120,6 @@ export const updateUtilisateurs = async (req: Request, res: Response) => {
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       userfromId.setDataValue('password', hashedPassword)
-      ismodified += 1;
     }
     if (pseudo && userfromId.getDataValue('pseudo') != pseudo) {
       const userfromPseudo = await users.findOne({where:{pseudo:pseudo}});
@@ -129,7 +127,6 @@ export const updateUtilisateurs = async (req: Request, res: Response) => {
         return res.status(200).send("Pseudo dupliqué, mise à jour annulée.");
       }
       userfromId.setDataValue('pseudo', pseudo);
-      ismodified += 1;
     } 
     if (email && userfromId.getDataValue('email') != email) {
       const userfromEmail = await users.findOne({where:{email:email}});
@@ -137,13 +134,9 @@ export const updateUtilisateurs = async (req: Request, res: Response) => {
         return res.status(200).send("Email dupliqué, mise à jour annulée.");
       }
       userfromId.setDataValue('email', email);
-      ismodified += 1;
     }
-    if (userfromId.getDataValue('bio') != bio)
+    if (userfromId.getDataValue('bio') != bio) {
       userfromId.setDataValue('bio', bio);
-      ismodified += 1;
-    if (ismodified === 0) {
-      return res.status(200).send(`L'utilisateur n'a pas été mis à jour puisque les données sont identiques.`)
     }
     await userfromId.save();
     return res.status(200).send(`Utilisateur mis à jour avec succes.`);

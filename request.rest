@@ -26,9 +26,10 @@ GET http://localhost:5000/api/auth/refresh_token
 DELETE http://localhost:5000/api/utilisateur/84
 
 ###
-PUT http://localhost:5000/api/utilisateur/79
+PUT http://localhost:5000/api/utilisateur/1
 Content-Type: application/json
 
 {
-    "password": "WAW"
+    "pseudo": "Boberto",
+    "bio": "b"
 }
