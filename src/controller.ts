@@ -111,19 +111,24 @@ const removeUtilisateurs = async (req: Request, res: Response) => {
 };
 
 const updateUtilisateurs = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  const { pseudo, email, bio } = req.body;
+  const { pseudo, email, bio, password } = req.body;
   const userfromId = await users.findByPk(parseInt(req.params.id));
   try {
     if (!userfromId) {
       return res.status(404).send("L'utilisateur n'existe pas.")
     }
-    if (userfromId.getDataValue('pseudo') != pseudo)
-      userfromId.setDataValue('pseudo', pseudo)
-    if (userfromId.getDataValue('email') != email)
-      userfromId.setDataValue('email', email)
+    //TODO PASSWORD
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      userfromId.setDataValue('password', hashedPassword)
+    }
+    if (pseudo && userfromId.getDataValue('pseudo') != pseudo) {
+      userfromId.setDataValue('pseudo', pseudo);
+    } 
+    if (email && userfromId.getDataValue('email') != email)
+      userfromId.setDataValue('email', email);
     if (userfromId.getDataValue('bio') != bio)
-      userfromId.setDataValue('bio', bio)
+      userfromId.setDataValue('bio', bio);
     await userfromId.save();
     return res.status(200).send(`Utilisateur mis à jour avec succes.`);
   } catch (error) {
