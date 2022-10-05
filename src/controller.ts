@@ -101,25 +101,17 @@ const addUtilisateurs = async (req: Request, res: Response) => {
   }
 }
 
-const getUtilisateursById = (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
-  pool.query(
-    queries.getUtilisateursById,
-    [id],
-    (error: ErrorRequestHandler, results: any) => {
-      try {
-        if (!results?.rows) throw error;
-
-        // If no users
-        if (results.rows.length == 0) res.status(404);
-
-        res.status(200).json(results.rows);
-      } catch (error) {
-        res.send(error);
-      }
+const getUtilisateursById = async (req: Request, res: Response) => {
+  const userfromId = await users.findByPk(parseInt(req.params.id));
+  try {
+    if (!userfromId) {
+      return res.status(404).send("L'utilisateur n'existe pas.")
     }
-  );
-};
+    res.status(200).json(userfromId);
+  } catch (error) {
+        res.send(error);
+    }
+}
 
 const removeUtilisateurs = (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
