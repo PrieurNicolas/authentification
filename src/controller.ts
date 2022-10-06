@@ -8,14 +8,9 @@ const jhelper = require("../utils/jwt-helpers.ts");
 
 export const refreshToken = (req: Request, res: Response) => {
   try {
-    const accessT = req.cookies.access_token;
     const refreshT = req.cookies.refresh_token;
     console.log(refreshT)
-    if (refreshT === null) return res.status(401).json({ error: 'Null Refresh Token.' });
-    if (accessT === null) return res.status(401).json({ error: 'Null Access Token.' });
-    jwt.verify(accessT, process.env.ACCESS_TOKEN_SECRET as string, (error: any, user: any) => {
-      if (error) return res.status(403).json({ error: error.message });
-    })
+    if (refreshT === null) return res.status(400).json({ error: 'Null Refresh Token.' });
     jwt.verify(refreshT, process.env.REFRESH_TOKEN_SECRET as string, (error: any, user: any) => {
       if (error) return res.status(403).json({ error: error.message });
       let tokens = jwtTokens(user);
