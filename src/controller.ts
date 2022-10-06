@@ -55,7 +55,7 @@ export const loginUtilisateur = async (req: Request, res: Response) => {
   if (!validPassword)
     return res.status(200).json({ error: "Mot de passe incorrect." });
   const tokens = await jhelper.jwtTokens(userfromEmail.getDataValue('password'));
-  res.json(tokens);
+  res.json([tokens,userfromEmail.getDataValue('id')]);
   } catch (error) {
     res.status(500).send(`Une erreur d'authentification est survenue.`);
   }
