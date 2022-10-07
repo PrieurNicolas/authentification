@@ -9,12 +9,11 @@ export const pool = new Pool({
 });
 
 export const DBlogs = {
-    source: "localhost",
     dialect: "postgres",
     user: "postgres",
     host: "localhost",
     database: "authentification",
-    password: "440802",
+    password: "b",
     port: 5432,
 }
 
