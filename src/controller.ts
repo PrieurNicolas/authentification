@@ -8,7 +8,7 @@ const jhelper = require("../utils/jwt-helpers.ts");
 
 export const refreshToken = (req: Request, res: Response) => {
   try {
-    const refreshT = req.cookies.refresh_token;
+    const refreshT = req.params.refresh_token;
     console.log(refreshT)
     if (refreshT === null) return res.status(400).json({ error: 'Null Refresh Token.' });
     jwt.verify(refreshT, process.env.REFRESH_TOKEN_SECRET as string, (error: any, user: any) => {
