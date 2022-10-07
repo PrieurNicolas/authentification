@@ -1,0 +1,36 @@
+POST http://localhost:5000/api/utilisateur
+Content-Type: application/json
+
+{
+    "email": "lasangerra@cat.us",
+    "password": "123oui",
+    "pseudo": "Garfelrera",
+    "bio": "Gourmand"
+}
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "lasang@cat.us",
+    "password": "123oui"
+}
+###
+GET http://localhost:5000/api/utilisateur
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODIsInBzZXVkbyI6IkdhcmZlbCIsImVtYWlsIjoibGFzYW5nQGNhdC51cyIsImlhdCI6MTY2NDc5NjQxNiwiZXhwIjoxNjY2NTI0NDE2fQ.s8k5ZX5mqe-Jd7W5a9pS2fJiUUwX48EeMPfCCdu7_UI
+###
+GET http://localhost:5000/api/utilisateur/1
+###
+GET http://localhost:5000/api/auth/refresh_token
+
+###
+DELETE http://localhost:5000/api/utilisateur/84
+
+###
+PUT http://localhost:5000/api/utilisateur/1
+Content-Type: application/json
+
+{
+    "pseudo": "Boberto",
+    "bio": "b"
+}
