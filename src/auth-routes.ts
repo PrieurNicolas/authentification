@@ -4,7 +4,7 @@ const controller = require('./controller');
 
 const router = Router();
 
-router.get('/refresh_token', controller.refreshToken);
+router.post('/refresh_token', controller.refreshToken);
 router.post('/login', controller.loginUtilisateur);
 
 module.exports = router;
